@@ -24,7 +24,7 @@ public struct WindowRule: Codable, Equatable, Sendable {
     }
 }
 
-/// User configuration, stored as JSON at `~/.config/tilemymac/config.json`.
+/// User configuration, stored as JSON at `~/.config/spinel/config.json`.
 /// Every key is optional; missing keys fall back to the defaults below.
 public struct Config: Codable, Equatable, Sendable {
     public var gaps: Gaps

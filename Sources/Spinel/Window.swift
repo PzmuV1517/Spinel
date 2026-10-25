@@ -1,5 +1,5 @@
 import AppKit
-import TileCore
+import SpinelCore
 
 /// A top-level window of some app, addressed through Accessibility.
 @MainActor

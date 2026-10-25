@@ -1,6 +1,6 @@
 import AppKit
 import ServiceManagement
-import TileCore
+import SpinelCore
 
 /// Menu bar item showing the active display's Desktop number and layout, with controls.
 @MainActor
@@ -47,7 +47,7 @@ final class StatusBar: NSObject, NSMenuDelegate {
         } else {
             symbol = "rectangle.split.2x1"
         }
-        button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "TileMyMac")
+        button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Spinel")
         button.imagePosition = .imageLeading
         button.title = title
     }
@@ -61,7 +61,7 @@ final class StatusBar: NSObject, NSMenuDelegate {
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
             })
             menu.addItem(.separator())
-            menu.addItem(action("Quit TileMyMac", key: "q") { NSApp.terminate(nil) })
+            menu.addItem(action("Quit Spinel", key: "q") { NSApp.terminate(nil) })
             return
         }
         guard let manager else { return }
@@ -110,8 +110,8 @@ final class StatusBar: NSObject, NSMenuDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
         menu.addItem(.separator())
-        menu.addItem(action("About TileMyMac") { [weak self] in self?.openSettings?(.about) })
-        menu.addItem(action("Quit TileMyMac", key: "q") { NSApp.terminate(nil) })
+        menu.addItem(action("About Spinel") { [weak self] in self?.openSettings?(.about) })
+        menu.addItem(action("Quit Spinel", key: "q") { NSApp.terminate(nil) })
     }
 
     private func disabled(_ title: String) -> NSMenuItem {

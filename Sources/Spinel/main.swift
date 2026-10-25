@@ -58,12 +58,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let main = NSMenu()
 
         let app = NSMenu()
-        app.addItem(withTitle: "About TileMyMac", action: #selector(showAbout), keyEquivalent: "").target = target
+        app.addItem(withTitle: "About Spinel", action: #selector(showAbout), keyEquivalent: "").target = target
         app.addItem(.separator())
         app.addItem(withTitle: "Settings…", action: #selector(showSettings), keyEquivalent: ",").target = target
         app.addItem(.separator())
-        app.addItem(withTitle: "Hide TileMyMac", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
-        app.addItem(withTitle: "Quit TileMyMac", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        app.addItem(withTitle: "Hide Spinel", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        app.addItem(withTitle: "Quit Spinel", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
 
         let edit = NSMenu(title: "Edit")
         edit.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
@@ -78,7 +78,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.addItem(withTitle: "Close", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         window.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
 
-        for (title, submenu) in [("TileMyMac", app), ("Edit", edit), ("Window", window)] {
+        for (title, submenu) in [("Spinel", app), ("Edit", edit), ("Window", window)] {
             let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
             item.submenu = submenu
             main.addItem(item)
@@ -87,7 +87,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-/// `TileMyMac --diagnose` prints what the window manager sees of displays and Spaces.
+/// `Spinel --diagnose` prints what the window manager sees of displays and Spaces.
 func diagnose() {
     print("SkyLight Spaces API available: \(SkyLight.spacesAvailable)")
     for display in Display.snapshot() {

@@ -1,6 +1,6 @@
-# TileMyMac Controls
+# Spinel Controls
 
-A cheat sheet for learning TileMyMac's keyboard and mouse controls.
+A cheat sheet for learning Spinel's keyboard and mouse controls.
 
 ---
 
@@ -23,7 +23,7 @@ letter. For example, **⌥⇧L** means *hold Option and Shift, then press L*.
 
 ## The one idea to remember: H J K L are arrows
 
-TileMyMac uses the Vim arrow keys. Your right hand rests on them:
+Spinel uses the Vim arrow keys. Your right hand rests on them:
 
 ```
    H        J        K        L
@@ -43,7 +43,7 @@ The modifier you hold chooses **what** happens. The letter chooses **which direc
 ← / ↓ / ↑ / → instead (for example **⌥←** = **⌥H**, **⌥⇧→** = **⌥⇧L**, **⌥⌃↓** = **⌥⌃J**).
 
 > **Heads-up:** in text editors, ⌥← / ⌥→ normally jump one word and ⌥⇧← / ⌥⇧→ select one
-> word. While TileMyMac runs, the arrow-key shortcuts move between windows instead. If you
+> word. While Spinel runs, the arrow-key shortcuts move between windows instead. If you
 > miss the word-jumping, delete the `alt-left` / `alt-right` / `alt-shift-left` /
 > `alt-shift-right` lines from your config.
 
@@ -146,7 +146,7 @@ System Settings → Displays, and wrap around at the end.
 
 ## 8. Native macOS controls (these still work)
 
-TileMyMac keeps the normal Mac Desktops. Each Desktop on each screen has its own layout.
+Spinel keeps the normal Mac Desktops. Each Desktop on each screen has its own layout.
 
 | Keys / gesture | What it does |
 | --- | --- |
@@ -168,7 +168,7 @@ TileMyMac keeps the normal Mac Desktops. Each Desktop on each screen has its own
 
 ## Changing the shortcuts
 
-Shortcuts live in `~/.config/tilemymac/config.json` under `"bindings"`:
+Shortcuts live in `~/.config/spinel/config.json` under `"bindings"`:
 
 ```json
 "bindings": {
@@ -180,5 +180,5 @@ Shortcuts live in `~/.config/tilemymac/config.json` under `"bindings"`:
 Modifier names are `alt` (⌥), `shift` (⇧), `ctrl` (⌃) and `cmd` (⌘). After editing, click the
 menu bar icon → **Reload Config**.
 
-> **Note:** while TileMyMac is running, Option+letter shortcuts replace the special characters
+> **Note:** while Spinel is running, Option+letter shortcuts replace the special characters
 > those keys normally type (for example, ⌥E normally starts an accent like é).

@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>TileMyMac</string>
+	<string>Spinel</string>
 	<key>CFBundleExecutable</key>
-	<string>TileMyMac</string>
+	<string>Spinel</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>dev.tilemymac.TileMyMac</string>
+	<string>io.github.pzmuv1517.Spinel</string>
 	<key>CFBundleName</key>
-	<string>TileMyMac</string>
+	<string>Spinel</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.0</string>
+	<string>0.3.0</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>4</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>14.0</string>
 	<key>LSUIElement</key>

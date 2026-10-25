@@ -1,7 +1,7 @@
 import AppKit
 import Observation
 import ServiceManagement
-import TileCore
+import SpinelCore
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case general, layout, shortcuts, rules, updates, about

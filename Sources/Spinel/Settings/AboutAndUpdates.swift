@@ -1,6 +1,6 @@
 import AppKit
 import SwiftUI
-import TileCore
+import SpinelCore
 
 // MARK: - About
 
@@ -17,7 +17,7 @@ struct AboutPage: View {
             HStack(spacing: 14) {
                 AppIconView(size: 56)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("TileMyMac").font(.system(size: 22, weight: .heavy))
+                    Text("Spinel").font(.system(size: 22, weight: .heavy))
                     Text("Version \(version)").foregroundStyle(Brand.secondary)
                 }
             }
@@ -109,7 +109,7 @@ struct UpdatesPage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             GlassSection(title: "Updates") {
-                Row(title: "Install automatically", info: "Checks GitHub every 6 hours and restarts TileMyMac after installing.") {
+                Row(title: "Install automatically", info: "Checks GitHub every 6 hours and restarts Spinel after installing.") {
                     Toggle("", isOn: $model.config.autoUpdate).toggleStyle(.switch).labelsHidden()
                 }
                 Divider()
@@ -133,7 +133,7 @@ struct UpdatesPage: View {
                         .disabled(isBusy)
                 }
                 if !updater.canInstall {
-                    Text("Installing needs TileMyMac in the Applications folder.")
+                    Text("Installing needs Spinel in the Applications folder.")
                         .font(.caption)
                         .foregroundStyle(Brand.tertiary)
                 }

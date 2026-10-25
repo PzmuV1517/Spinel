@@ -1,5 +1,5 @@
 import ApplicationServices
-import TileCore
+import SpinelCore
 
 extension AXUIElement {
     func value(_ attribute: String) -> CFTypeRef? {

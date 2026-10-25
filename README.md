@@ -1,14 +1,14 @@
-# TileMyMac
+# Spinel
 
 A tiling window manager for macOS that works *with* the Mac instead of around it.
 
 Most macOS tilers either ask you to disable SIP (yabai) or replace native Spaces with their
-own virtual workspaces (AeroSpace). TileMyMac does neither:
+own virtual workspaces (AeroSpace). Spinel does neither:
 
 - **Native Spaces stay native.** Every Desktop on every display gets its own layout. Switch
   with Ctrl-←/→, Mission Control or trackpad swipes as usual; each Desktop keeps its layout.
 - **Native fullscreen is respected.** Fullscreen apps and Split View live in their own Spaces,
-  which TileMyMac leaves alone. When an app leaves fullscreen it slides back where it was.
+  which Spinel leaves alone. When an app leaves fullscreen it slides back where it was.
 - **Each display is independent**, whether or not "Displays have separate Spaces" is on.
   The menu bar, notch and Dock are respected per display.
 - **The mouse still works.** Drag a tiled window onto another to swap them, onto another
@@ -17,9 +17,9 @@ own virtual workspaces (AeroSpace). TileMyMac does neither:
 
 ## Install
 
-**Download:** grab `TileMyMac-<version>.zip` from
-[Releases](https://github.com/PzmuV1517/TileMyMac/releases), unzip it and move
-`TileMyMac.app` to Applications. The app isn't notarized yet, so the first time, right-click it
+**Download:** grab `Spinel-<version>.zip` from
+[Releases](https://github.com/PzmuV1517/Spinel/releases), unzip it and move
+`Spinel.app` to Applications. The app isn't notarized yet, so the first time, right-click it
 → **Open** (or System Settings → Privacy & Security → **Open Anyway**).
 
 **From source:**
@@ -32,7 +32,7 @@ On first launch, grant Accessibility access when asked (System Settings → Priv
 Accessibility). The menu bar icon shows the current Desktop number and layout.
 
 Other targets: `make test`, `make run` (launch from `build/`), `make diagnose` (print what
-TileMyMac sees of your displays and Spaces).
+Spinel sees of your displays and Spaces).
 
 ## Default keys
 
@@ -70,7 +70,7 @@ Changes are saved to `config.json` and apply immediately.
 
 ## Configuration
 
-`~/.config/tilemymac/config.json` is created on first launch. Every key is optional.
+`~/.config/spinel/config.json` is created on first launch. Every key is optional.
 
 ```json
 {
@@ -110,14 +110,14 @@ minimized windows, hidden apps, and anything matched by `floatApps` or a `rules`
 
 ## Recommended macOS settings
 
-- **Stage Manager off.** TileMyMac pauses itself while it is on.
+- **Stage Manager off.** Spinel pauses itself while it is on.
 - **System Settings → Desktop & Dock → "Drag windows to screen edges to tile" off**, so macOS
   Sequoia+ native tiling doesn't fight the layout.
 - **"Automatically rearrange Spaces based on most recent use" off**, so Desktop numbers stay put.
 
 ## Updates
 
-TileMyMac checks GitHub releases every 6 hours and, with **Install automatically** on (the
+Spinel checks GitHub releases every 6 hours and, with **Install automatically** on (the
 default, `"autoUpdate"` in the config), installs new versions and restarts itself. A download is
 only installed if it's signed by the same developer as the running copy.
 
@@ -125,6 +125,6 @@ only installed if it's signed by the same developer as the running copy.
 
 - Move a window to another Desktop by keyboard (needs care without SIP)
 - Native-feeling animations
-- `tilemymac` CLI for scripting (Raycast, Shortcuts, skhd)
+- `spinel` CLI for scripting (Raycast, Shortcuts, skhd)
 - Master/stack layout, per-Desktop gap overrides
 - Remember layouts across restarts

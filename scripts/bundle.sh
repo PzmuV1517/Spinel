@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds build/TileMyMac.app. Signing with a stable identity (any "Apple Development" or
+# Builds build/Spinel.app. Signing with a stable identity (any "Apple Development" or
 # "Developer ID" certificate) matters: macOS ties the Accessibility grant to the signature,
 # so an ad-hoc signed build has to be re-approved after every rebuild.
 set -euo pipefail
@@ -7,12 +7,12 @@ cd "$(dirname "$0")/.."
 
 CONFIGURATION=${CONFIGURATION:-release}
 swift build -c "$CONFIGURATION"
-BIN="$(swift build -c "$CONFIGURATION" --show-bin-path)/TileMyMac"
+BIN="$(swift build -c "$CONFIGURATION" --show-bin-path)/Spinel"
 
-APP=build/TileMyMac.app
+APP=build/Spinel.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/TileMyMac"
+cp "$BIN" "$APP/Contents/MacOS/Spinel"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 

@@ -10,24 +10,24 @@ app:
 	./scripts/bundle.sh
 
 run: app
-	-pkill -x TileMyMac
-	open build/TileMyMac.app
+	-pkill -x Spinel
+	open build/Spinel.app
 
 install: app
-	-pkill -x TileMyMac
-	rm -rf /Applications/TileMyMac.app
-	cp -R build/TileMyMac.app /Applications/
-	open /Applications/TileMyMac.app
+	-pkill -x Spinel
+	rm -rf /Applications/Spinel.app
+	mv build/Spinel.app /Applications/  # move, so Spotlight sees one copy
+	open /Applications/Spinel.app
 
-# Zipped, signed app for a GitHub release: build/TileMyMac-<version>.zip
+# Zipped, signed app for a GitHub release: build/Spinel-<version>.zip
 release: app
-	ditto -c -k --keepParent build/TileMyMac.app build/TileMyMac-$$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' Resources/Info.plist).zip
+	ditto -c -k --keepParent build/Spinel.app build/Spinel-$$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' Resources/Info.plist).zip
 
 icon:
 	swift scripts/make-icon.swift
 
 diagnose: build
-	.build/debug/TileMyMac --diagnose
+	.build/debug/Spinel --diagnose
 
 clean:
 	rm -rf .build build

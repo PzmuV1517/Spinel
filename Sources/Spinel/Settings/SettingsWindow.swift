@@ -1,8 +1,8 @@
 import AppKit
 import SwiftUI
-import TileCore
+import SpinelCore
 
-/// Owns the settings window. While it is open TileMyMac shows in the Dock and ⌘-Tab like a
+/// Owns the settings window. While it is open Spinel shows in the Dock and ⌘-Tab like a
 /// regular app; when it closes the app goes back to living only in the menu bar.
 @MainActor
 final class SettingsWindowController: NSObject, NSWindowDelegate {
@@ -27,7 +27,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     private func makeWindow() -> NSWindow {
         let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model, updater: updater)))
-        window.title = "TileMyMac"
+        window.title = "Spinel"
         window.titleVisibility = .hidden
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true

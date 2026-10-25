@@ -1,5 +1,5 @@
 import AppKit
-import TileCore
+import SpinelCore
 
 /// Subscribes to one app's Accessibility notifications and forwards them to a handler.
 @MainActor

@@ -1,6 +1,6 @@
 import AppKit
 import SwiftUI
-import TileCore
+import SpinelCore
 
 // MARK: - General
 
@@ -12,7 +12,7 @@ struct GeneralPage: View {
             HStack(spacing: 16) {
                 AppIconView(size: 64)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("TileMyMac").font(.system(size: 28, weight: .heavy))
+                    Text("Spinel").font(.system(size: 28, weight: .heavy))
                     Label(model.statusLine, systemImage: model.tilingEnabled ? "checkmark.circle.fill" : "pause.circle.fill")
                             .foregroundStyle(Brand.secondary)
                         .font(.callout)

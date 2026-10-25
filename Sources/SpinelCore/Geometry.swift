@@ -4,7 +4,7 @@ import CoreGraphics
 /// shared between the Accessibility API and SkyLight, so it is our window identity.
 public typealias WindowID = UInt32
 
-/// All TileCore geometry uses the Accessibility / CoreGraphics global coordinate space:
+/// All SpinelCore geometry uses the Accessibility / CoreGraphics global coordinate space:
 /// origin at the top-left of the primary display, y growing downward.
 public enum Direction: String, CaseIterable, Sendable {
     case left, right, up, down

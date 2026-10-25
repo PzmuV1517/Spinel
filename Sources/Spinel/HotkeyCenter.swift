@@ -1,8 +1,8 @@
 import AppKit
 import os
-import TileCore
+import SpinelCore
 
-let log = Logger(subsystem: "dev.tilemymac.TileMyMac", category: "wm")
+let log = Logger(subsystem: "io.github.pzmuv1517.Spinel", category: "wm")
 
 /// Global hotkeys through a keyboard event tap. Matching key presses are swallowed so they never
 /// reach the focused app; everything else passes through untouched.
@@ -24,7 +24,7 @@ final class HotkeyCenter: @unchecked Sendable {
 
     init() {
         let thread = Thread { [unowned self] in self.runTap() }
-        thread.name = "TileMyMac.hotkeys"
+        thread.name = "Spinel.hotkeys"
         thread.qualityOfService = .userInteractive
         thread.start()
         ready.wait()

@@ -1,9 +1,9 @@
 import AppKit
 import SwiftUI
-import TileCore
+import SpinelCore
 
 /// A button that shows a shortcut and, when clicked, records the next key combination.
-/// TileMyMac's own shortcuts are paused while recording so they can be re-recorded.
+/// Spinel's own shortcuts are paused while recording so they can be re-recorded.
 struct HotkeyRecorder: View {
     @Binding var hotkey: String
     /// Shared across rows so only one recorder listens at a time.

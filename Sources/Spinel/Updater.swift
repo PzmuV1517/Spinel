@@ -1,7 +1,7 @@
 import AppKit
 import Observation
 import Security
-import TileCore
+import SpinelCore
 
 /// Lists GitHub releases and installs them in place. A downloaded build is only installed if it
 /// is signed by the same team as the running app.
@@ -25,9 +25,9 @@ final class Updater {
         case failed(String)
     }
 
-    nonisolated static let repository = "PzmuV1517/TileMyMac"
+    nonisolated static let repository = "PzmuV1517/Spinel"
     /// Releases older than this can't update themselves.
-    nonisolated static let firstSelfUpdatingVersion = Version("0.2.0")!
+    nonisolated static let firstSelfUpdatingVersion = Version("0.3.0")!
 
     private(set) var releases: [Release] = []
     private(set) var phase: Phase = .idle
@@ -94,21 +94,24 @@ final class Updater {
     func install(_ release: Release) async {
         guard let zip = release.zip else { return }
         guard canInstall else {
-            phase = .failed("Move TileMyMac to Applications to install updates.")
+            phase = .failed("Move Spinel to Applications to install updates.")
             return
         }
         phase = .installing(release.tag)
         do {
             let (download, _) = try await URLSession.shared.download(from: zip)
-            let work = FileManager.default.temporaryDirectory.appendingPathComponent("TileMyMac-\(UUID().uuidString)")
+            let work = FileManager.default.temporaryDirectory.appendingPathComponent("Spinel-\(UUID().uuidString)")
             try FileManager.default.createDirectory(at: work, withIntermediateDirectories: true)
             let archive = work.appendingPathComponent("update.zip")
             try FileManager.default.moveItem(at: download, to: archive)
 
             let newApp = try await Task.detached {
                 try Self.run("/usr/bin/ditto", ["-x", "-k", archive.path, work.path])
-                let app = work.appendingPathComponent("TileMyMac.app")
-                guard FileManager.default.fileExists(atPath: app.path) else { throw UpdateError("The download has no TileMyMac.app") }
+                let app = work.appendingPathComponent("Spinel.app")
+                guard FileManager.default.fileExists(atPath: app.path) else { throw UpdateError("The download has no Spinel.app") }
+                guard Bundle(url: app)?.bundleIdentifier == Bundle.main.bundleIdentifier else {
+                    throw UpdateError("The download is a different app")
+                }
                 return app
             }.value
 
@@ -157,10 +160,12 @@ final class Updater {
                     version: Version(item.tag_name),
                     notes: item.body ?? "",
                     date: item.published_at,
-                    zip: item.assets.first { $0.name.hasSuffix(".zip") }?.browser_download_url,
+                    // Releases from before the rename ship TileMyMac.app, which can't replace Spinel.
+                    zip: item.assets.first { $0.name.hasPrefix("Spinel") && $0.name.hasSuffix(".zip") }?.browser_download_url,
                     page: item.html_url
                 )
             }
+            .filter { $0.zip != nil }
             .sorted { ($0.version ?? Version("0")!) > ($1.version ?? Version("0")!) }
     }
 

@@ -1,5 +1,5 @@
 import AppKit
-import TileCore
+import SpinelCore
 
 /// Keeps one layout tree per (native Space, display) and reconciles it with what macOS shows.
 ///
@@ -9,7 +9,7 @@ import TileCore
 @MainActor
 final class WindowManager {
     static let configURL = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent(".config/tilemymac/config.json")
+        .appendingPathComponent(".config/spinel/config.json")
 
     private(set) var config = Config.default
     private(set) var configErrors: [String] = []
@@ -135,6 +135,12 @@ final class WindowManager {
 
     func loadConfig() {
         let url = Self.configURL
+        // Carry settings over from when the app was called TileMyMac.
+        let legacy = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/tilemymac/config.json")
+        if !FileManager.default.fileExists(atPath: url.path), FileManager.default.fileExists(atPath: legacy.path) {
+            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? FileManager.default.copyItem(at: legacy, to: url)
+        }
         if !FileManager.default.fileExists(atPath: url.path) {
             try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
             try? Config.default.encoded().write(to: url)

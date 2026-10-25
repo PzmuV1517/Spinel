@@ -1,5 +1,5 @@
 import AppKit
-import TileCore
+import SpinelCore
 
 /// Identifies one tiling area: a native Space as shown on one display. With "Displays have
 /// separate Spaces" off, one Space spans every display and each display still tiles separately.

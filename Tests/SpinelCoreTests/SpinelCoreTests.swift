@@ -1,6 +1,6 @@
 import CoreGraphics
 import XCTest
-@testable import TileCore
+@testable import SpinelCore
 
 final class LayoutTreeTests: XCTestCase {
     let bounds = CGRect(x: 0, y: 0, width: 1000, height: 600)
