@@ -16,6 +16,8 @@ final class Updater {
         let date: Date?
         let zip: URL?
         let page: URL
+        /// Released as TileMyMac: listed for history, never installable over Spinel.
+        let isLegacy: Bool
     }
 
     enum Phase: Equatable {
@@ -154,18 +156,19 @@ final class Updater {
         return try decoder.decode([Item].self, from: data)
             .filter { !$0.draft }
             .map { item in
-                Release(
+                let zip = item.assets.first { $0.name.hasPrefix("Spinel") && $0.name.hasSuffix(".zip") }
+                return Release(
                     id: item.id,
                     tag: item.tag_name,
                     version: Version(item.tag_name),
                     notes: item.body ?? "",
                     date: item.published_at,
+                    zip: zip?.browser_download_url,
+                    page: item.html_url,
                     // Releases from before the rename ship TileMyMac.app, which can't replace Spinel.
-                    zip: item.assets.first { $0.name.hasPrefix("Spinel") && $0.name.hasSuffix(".zip") }?.browser_download_url,
-                    page: item.html_url
+                    isLegacy: zip == nil && item.assets.contains { $0.name.hasPrefix("TileMyMac") }
                 )
             }
-            .filter { $0.zip != nil }
             .sorted { ($0.version ?? Version("0")!) > ($1.version ?? Version("0")!) }
     }
 

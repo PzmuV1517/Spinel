@@ -8,6 +8,7 @@ import SpinelCore
 final class SettingsWindowController: NSObject, NSWindowDelegate {
     private let model: SettingsModel
     private let updater: Updater
+    private let egg = EasterEgg()
     private var window: NSWindow?
 
     init(manager: WindowManager, updater: Updater) {
@@ -26,7 +27,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     }
 
     private func makeWindow() -> NSWindow {
-        let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model, updater: updater)))
+        let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model, updater: updater).environment(egg)))
         window.title = "Spinel"
         window.titleVisibility = .hidden
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
@@ -44,6 +45,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         model.isRecording = false
+        egg.reset()
         NSApp.setActivationPolicy(.accessory)
     }
 }
@@ -51,6 +53,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 struct SettingsView: View {
     @Bindable var model: SettingsModel
     let updater: Updater
+    @Environment(EasterEgg.self) private var egg
 
     var body: some View {
         NavigationSplitView {
@@ -76,6 +79,16 @@ struct SettingsView: View {
             }
             .background(Backdrop())
             .navigationTitle("")
+        }
+        .allowsHitTesting(egg.phase == .idle)
+        .overlay {
+            if egg.phase == .video {
+                EasterEggVideo(egg: egg).transition(.opacity)
+            }
+        }
+        .coordinateSpace(name: EasterEgg.space)
+        .onPreferenceChange(FallableFrames.self) { frames in
+            MainActor.assumeIsolated { egg.frames = frames }
         }
         .tint(Color(white: 0.42))
         .foregroundStyle(Brand.primary)
@@ -120,6 +133,7 @@ struct SidebarItem: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+        .fallable("sidebar.\(tab.rawValue)")
     }
 }
 
@@ -169,15 +183,8 @@ enum Brand {
 // MARK: - Liquid Glass with a material fallback before macOS 26
 
 extension View {
-    @ViewBuilder
     func glassCard(cornerRadius: CGFloat = 20, padding: CGFloat = 18) -> some View {
-        let content = self.padding(padding).frame(maxWidth: .infinity, alignment: .leading)
-            .overlay(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous).strokeBorder(Brand.hairline))
-        if #available(macOS 26, *) {
-            content.glassEffect(.regular.tint(.white.opacity(0.02)), in: .rect(cornerRadius: cornerRadius))
-        } else {
-            content.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-        }
+        modifier(GlassCard(cornerRadius: cornerRadius, padding: padding))
     }
 
     func glassButton(prominent: Bool = false) -> some View {
@@ -190,6 +197,26 @@ extension View {
             glassEffect(.regular.interactive(), in: .circle)
         } else {
             background(.regularMaterial, in: Circle())
+        }
+    }
+}
+
+private struct GlassCard: ViewModifier {
+    let cornerRadius: CGFloat
+    let padding: CGFloat
+    @Environment(EasterEgg.self) private var egg
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        let card = content.padding(padding).frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(shape.strokeBorder(Brand.hairline))
+        if egg.phase != .idle {
+            // Glass smears when rotated, so falling cards get a plain fill.
+            card.background(Brand.graphite, in: shape)
+        } else if #available(macOS 26, *) {
+            card.glassEffect(.regular.tint(.white.opacity(0.02)), in: .rect(cornerRadius: cornerRadius))
+        } else {
+            card.background(.ultraThinMaterial, in: shape)
         }
     }
 }

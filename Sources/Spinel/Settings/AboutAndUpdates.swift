@@ -5,6 +5,7 @@ import SpinelCore
 // MARK: - About
 
 struct AboutPage: View {
+    @Environment(EasterEgg.self) private var egg
     private var version: String {
         let info = Bundle.main.infoDictionary
         let short = info?["CFBundleShortVersionString"] as? String ?? "dev"
@@ -15,10 +16,13 @@ struct AboutPage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             HStack(spacing: 14) {
-                AppIconView(size: 56)
+                AppIconView(size: 56).fallable("about.icon")
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Spinel").font(.system(size: 22, weight: .heavy))
-                    Text("Version \(version)").foregroundStyle(Brand.secondary)
+                    Text("Spinel")
+                        .font(.system(size: 22, weight: .heavy))
+                        .onTapGesture { egg.tap() }
+                        .fallable("about.name")
+                    Text("Version \(version)").foregroundStyle(Brand.secondary).fallable("about.version")
                 }
             }
 
@@ -32,10 +36,12 @@ struct AboutPage: View {
                 Fact("Bugs", "Open an issue", link: Credits.repository.appendingPathComponent("issues"))
             }
             .glassCard(padding: 4)
+            .fallable("about.card")
 
             Text("© \(Credits.year) \(Credits.author)")
                 .font(.caption)
                 .foregroundStyle(Brand.tertiary)
+                .fallable("about.copyright")
         }
     }
 }
@@ -212,7 +218,12 @@ private struct ReleaseRow: View {
 
                 Spacer()
 
-                if isInstalled {
+                if release.isLegacy {
+                    Text("TileMyMac")
+                        .font(.caption)
+                        .foregroundStyle(Brand.tertiary)
+                        .help("Released under the old name. It can't be installed over Spinel.")
+                } else if isInstalled {
                     Text("Installed")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Brand.secondary)
