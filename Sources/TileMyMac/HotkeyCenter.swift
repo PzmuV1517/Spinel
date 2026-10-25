@@ -16,6 +16,7 @@ final class HotkeyCenter: @unchecked Sendable {
     private let lock = NSLock()
     /// Guarded by `lock`; read on the tap thread, written on the main thread.
     private var actions: [Hotkey: @MainActor () -> Void] = [:]
+    private var paused = false
     /// Key codes whose key-down we swallowed, so the matching key-up is swallowed too. Tap thread only.
     private var swallowed: Set<UInt32> = []
     private var tap: CFMachPort?
@@ -63,6 +64,12 @@ final class HotkeyCenter: @unchecked Sendable {
         }
     }
 
+    /// While paused every key passes through, e.g. so the settings window can record a shortcut.
+    var isPaused: Bool {
+        get { lock.withLock { paused } }
+        set { lock.withLock { paused = newValue } }
+    }
+
     func unregisterAll() {
         lock.withLock { actions.removeAll() }
     }
@@ -76,7 +83,7 @@ final class HotkeyCenter: @unchecked Sendable {
             return false
         case .keyDown:
             let hotkey = Hotkey(modifiers: Self.modifiers(of: event.flags), keyCode: UInt32(event.getIntegerValueField(.keyboardEventKeycode)))
-            guard let action = lock.withLock({ actions[hotkey] }) else { return false }
+            guard let action = lock.withLock({ paused ? nil : actions[hotkey] }) else { return false }
             swallowed.insert(hotkey.keyCode)
             DispatchQueue.main.async { MainActor.assumeIsolated { action() } }
             return true

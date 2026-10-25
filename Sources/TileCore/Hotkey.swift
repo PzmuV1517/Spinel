@@ -49,3 +49,42 @@ public struct Hotkey: Hashable, Sendable {
         "left": 123, "right": 124, "down": 125, "up": 126,
     ]
 }
+
+extension Hotkey {
+    /// The config spelling, e.g. `alt-shift-h`.
+    public var configString: String {
+        var parts: [String] = []
+        if modifiers.contains(.command) { parts.append("cmd") }
+        if modifiers.contains(.control) { parts.append("ctrl") }
+        if modifiers.contains(.option) { parts.append("alt") }
+        if modifiers.contains(.shift) { parts.append("shift") }
+        parts.append(Self.keyName(for: keyCode) ?? "?")
+        return parts.joined(separator: "-")
+    }
+
+    /// Menu-style symbols in Apple's modifier order, e.g. `⌃⌥⇧H`.
+    public var displayString: String {
+        var text = ""
+        if modifiers.contains(.control) { text += "⌃" }
+        if modifiers.contains(.option) { text += "⌥" }
+        if modifiers.contains(.shift) { text += "⇧" }
+        if modifiers.contains(.command) { text += "⌘" }
+        let name = Self.keyName(for: keyCode) ?? "?"
+        return text + (Self.keySymbols[name] ?? name.uppercased())
+    }
+
+    /// The config name of a key code, or `nil` if it can't be bound.
+    public static func keyName(for keyCode: UInt32) -> String? { keyNames[keyCode] }
+
+    private static let keyNames: [UInt32: String] = Dictionary(
+        keyCodes.filter { $0.key != "enter" }.map { ($0.value, $0.key) },
+        uniquingKeysWith: { first, _ in first }
+    )
+
+    private static let keySymbols: [String: String] = [
+        "left": "←", "right": "→", "up": "↑", "down": "↓", "return": "↩", "space": "Space",
+        "tab": "⇥", "escape": "⎋", "backspace": "⌫", "comma": ",", "period": ".", "minus": "-",
+        "equal": "=", "slash": "/", "semicolon": ";", "quote": "'", "grave": "`",
+        "leftbracket": "[", "rightbracket": "]", "backslash": "\\",
+    ]
+}

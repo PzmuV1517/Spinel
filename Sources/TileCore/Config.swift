@@ -39,6 +39,8 @@ public struct Config: Codable, Equatable, Sendable {
     public var rules: [WindowRule]
     /// Hotkey (`alt-shift-h`) → command (`move left`).
     public var bindings: [String: String]
+    /// Install new GitHub releases automatically.
+    public var autoUpdate: Bool
 
     public init(
         gaps: Gaps = Gaps(inner: 8, outer: 8),
@@ -47,7 +49,8 @@ public struct Config: Codable, Equatable, Sendable {
         mouseFollowsFocus: Bool = false,
         floatApps: [String] = Config.defaultFloatApps,
         rules: [WindowRule] = [],
-        bindings: [String: String] = Config.defaultBindings
+        bindings: [String: String] = Config.defaultBindings,
+        autoUpdate: Bool = true
     ) {
         self.gaps = gaps
         self.defaultLayout = defaultLayout
@@ -56,6 +59,7 @@ public struct Config: Codable, Equatable, Sendable {
         self.floatApps = floatApps
         self.rules = rules
         self.bindings = bindings
+        self.autoUpdate = autoUpdate
     }
 
     public static let `default` = Config()
@@ -107,7 +111,7 @@ public struct Config: Codable, Equatable, Sendable {
     ]
 
     enum CodingKeys: String, CodingKey {
-        case gaps, defaultLayout, resizeStep, mouseFollowsFocus, floatApps, rules, bindings
+        case gaps, defaultLayout, resizeStep, mouseFollowsFocus, floatApps, rules, bindings, autoUpdate
     }
 
     public init(from decoder: Decoder) throws {
@@ -120,6 +124,7 @@ public struct Config: Codable, Equatable, Sendable {
         floatApps = try c.decodeIfPresent([String].self, forKey: .floatApps) ?? d.floatApps
         rules = try c.decodeIfPresent([WindowRule].self, forKey: .rules) ?? d.rules
         bindings = try c.decodeIfPresent([String: String].self, forKey: .bindings) ?? d.bindings
+        autoUpdate = try c.decodeIfPresent(Bool.self, forKey: .autoUpdate) ?? d.autoUpdate
     }
 
     public static func decode(_ data: Data) throws -> Config {

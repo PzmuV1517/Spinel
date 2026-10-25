@@ -28,10 +28,24 @@ func render(size: CGFloat) -> Data {
     tilePath.fill()
     NSGraphicsContext.restoreGraphicsState()
 
+    // Ferriteworks monochrome: graphite fading to black, with a faint dot grid.
     NSGradient(colors: [
-        NSColor(srgbRed: 0.20, green: 0.27, blue: 0.95, alpha: 1),
-        NSColor(srgbRed: 0.42, green: 0.20, blue: 0.85, alpha: 1),
-    ])!.draw(in: tilePath, angle: -60)
+        NSColor(srgbRed: 0.17, green: 0.17, blue: 0.17, alpha: 1),
+        NSColor(srgbRed: 0.0, green: 0.0, blue: 0.0, alpha: 1),
+    ])!.draw(in: tilePath, angle: -90)
+    NSGraphicsContext.saveGraphicsState()
+    tilePath.addClip()
+    NSColor.white.withAlphaComponent(0.10).setFill()
+    for x in stride(from: tile.minX + 16, to: tile.maxX, by: 32) {
+        for y in stride(from: tile.minY + 16, to: tile.maxY, by: 32) {
+            NSBezierPath(ovalIn: NSRect(x: x - 2.5, y: y - 2.5, width: 5, height: 5)).fill()
+        }
+    }
+    NSGraphicsContext.restoreGraphicsState()
+    NSColor.white.withAlphaComponent(0.12).setStroke()
+    let rim = NSBezierPath(roundedRect: tile.insetBy(dx: 2, dy: 2), xRadius: 183, yRadius: 183)
+    rim.lineWidth = 4
+    rim.stroke()
 
     // Three panes in a BSP split: one tall pane on the left, two stacked on the right.
     let inset: CGFloat = 96
@@ -44,20 +58,20 @@ func render(size: CGFloat) -> Data {
         NSRect(x: area.minX + leftWidth + gap, y: area.minY + rightHeight + gap, width: area.width - leftWidth - gap, height: rightHeight),
         NSRect(x: area.minX + leftWidth + gap, y: area.minY, width: area.width - leftWidth - gap, height: rightHeight),
     ]
-    let opacities: [CGFloat] = [0.96, 0.78, 0.62]
-    for (pane, opacity) in zip(panes, opacities) {
+    let shades: [(CGFloat, CGFloat)] = [(0.97, 0.80), (0.62, 0.44), (0.42, 0.28)]
+    for (pane, shade) in zip(panes, shades) {
         let path = NSBezierPath(roundedRect: pane, xRadius: 44, yRadius: 44)
-        NSColor.white.withAlphaComponent(opacity).setFill()
-        path.fill()
+        NSGradient(starting: NSColor(white: shade.0, alpha: 1), ending: NSColor(white: shade.1, alpha: 1))!
+            .draw(in: path, angle: -90)
         // Title bar strip with traffic-light dots, so the panes read as windows.
         let bar = NSRect(x: pane.minX, y: pane.maxY - 70, width: pane.width, height: 70)
         NSGraphicsContext.saveGraphicsState()
         path.addClip()
-        NSColor(srgbRed: 0.16, green: 0.18, blue: 0.45, alpha: 0.18).setFill()
+        NSColor.black.withAlphaComponent(0.14).setFill()
         bar.fill()
         NSGraphicsContext.restoreGraphicsState()
-        for (i, color) in [NSColor.systemRed, .systemYellow, .systemGreen].enumerated() {
-            color.setFill()
+        for i in 0..<3 {
+            NSColor.black.withAlphaComponent(0.35).setFill()
             NSBezierPath(ovalIn: NSRect(x: pane.minX + 34 + CGFloat(i) * 40, y: bar.midY - 13, width: 26, height: 26)).fill()
         }
     }
@@ -65,7 +79,7 @@ func render(size: CGFloat) -> Data {
     // Subtle top highlight for depth.
     NSGraphicsContext.saveGraphicsState()
     tilePath.addClip()
-    NSGradient(colors: [NSColor.white.withAlphaComponent(0.18), NSColor.white.withAlphaComponent(0)])!
+    NSGradient(colors: [NSColor.white.withAlphaComponent(0.08), NSColor.white.withAlphaComponent(0)])!
         .draw(in: NSRect(x: tile.minX, y: tile.midY, width: tile.width, height: tile.height / 2), angle: -90)
     NSGraphicsContext.restoreGraphicsState()
 

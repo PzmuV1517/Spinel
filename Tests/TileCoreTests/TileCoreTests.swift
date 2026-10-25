@@ -158,3 +158,34 @@ final class ParsingTests: XCTestCase {
         XCTAssertNil(Command.parse(""))
     }
 }
+
+final class SettingsSupportTests: XCTestCase {
+    func testHotkeyStringsRoundTrip() {
+        for key in Config.defaultBindings.keys {
+            let hotkey = Hotkey.parse(key)!
+            XCTAssertEqual(Hotkey.parse(hotkey.configString), hotkey, key)
+        }
+        XCTAssertEqual(Hotkey.parse("alt-shift-h")?.displayString, "⌥⇧H")
+        XCTAssertEqual(Hotkey.parse("ctrl-alt-left")?.displayString, "⌃⌥←")
+        XCTAssertEqual(Hotkey.parse("cmd-enter")?.configString, "cmd-return")
+    }
+
+    func testCatalogCommandsParseAndCoverDefaults() {
+        for info in Command.catalog { XCTAssertNotNil(Command.parse(info.command), info.command) }
+        let catalogued = Set(Command.catalog.map(\.command))
+        for command in Config.defaultBindings.values { XCTAssertTrue(catalogued.contains(command), command) }
+        XCTAssertEqual(Set(Command.catalog.map(\.group)), Set(Command.catalogGroups))
+    }
+}
+
+final class VersionTests: XCTestCase {
+    func testParsingAndOrdering() {
+        XCTAssertEqual(Version("v0.2.0")?.description, "0.2.0")
+        XCTAssertNil(Version("v0.2-beta"))
+        XCTAssertNil(Version(""))
+        XCTAssertLessThan(Version("0.1.1")!, Version("v0.2.0")!)
+        XCTAssertLessThan(Version("0.9")!, Version("0.10")!)
+        XCTAssertEqual(Version("1.0")!, Version("1.0.0")!)
+        XCTAssertFalse(Version("1.2.0")! < Version("1.1.9")!)
+    }
+}

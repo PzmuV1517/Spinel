@@ -55,6 +55,19 @@ TileMyMac sees of your displays and Spaces).
 
 The arrow keys work in place of H J K L everywhere (⌥←, ⌥⇧→, ⌥⌃↓…). Keys are physical positions, so they work with any keyboard layout.
 
+## Settings
+
+Click the menu bar icon → **Settings…** (⌘,) for a Liquid Glass settings window:
+
+- **General**: pause tiling, default layout, mouse follows focus, launch at login
+- **Layout**: gap sizes with a live preview, resize step
+- **Shortcuts**: every command with its shortcuts; click one to record a new key combination
+- **Window Rules**: apps that always float, and per-window rules
+- **Updates**: every release with its notes, one-click install or downgrade, and automatic updates
+- **About**: version and credits
+
+Changes are saved to `config.json` and apply immediately.
+
 ## Configuration
 
 `~/.config/tilemymac/config.json` is created on first launch. Every key is optional.
@@ -101,6 +114,12 @@ minimized windows, hidden apps, and anything matched by `floatApps` or a `rules`
 - **System Settings → Desktop & Dock → "Drag windows to screen edges to tile" off**, so macOS
   Sequoia+ native tiling doesn't fight the layout.
 - **"Automatically rearrange Spaces based on most recent use" off**, so Desktop numbers stay put.
+
+## Updates
+
+TileMyMac checks GitHub releases every 6 hours and, with **Install automatically** on (the
+default, `"autoUpdate"` in the config), installs new versions and restarts itself. A download is
+only installed if it's signed by the same developer as the running copy.
 
 ## Roadmap
 

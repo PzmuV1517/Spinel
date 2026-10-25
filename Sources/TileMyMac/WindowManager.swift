@@ -144,11 +144,11 @@ final class WindowManager {
             config = try Config.decode(Data(contentsOf: url))
         } catch {
             config = .default
-            configErrors.append("config.json could not be read, using defaults: \(error)")
+            configErrors.append("Couldn't read config.json, using defaults: \(error)")
         }
 
         hotkeys.unregisterAll()
-        if !hotkeys.isActive { configErrors.append("Keyboard shortcuts are unavailable: Accessibility access is missing") }
+        if !hotkeys.isActive { configErrors.append("Shortcuts are off: no Accessibility access") }
         let (bindings, errors) = config.resolvedBindings()
         configErrors += errors
         for (hotkey, command) in bindings {
@@ -159,6 +159,18 @@ final class WindowManager {
             }
         }
         onChange?()
+    }
+
+    /// Writes `config` to disk and applies it.
+    func save(_ config: Config) throws {
+        try FileManager.default.createDirectory(at: Self.configURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try config.encoded().write(to: Self.configURL, options: .atomic)
+        perform(.reloadConfig)
+    }
+
+    var hotkeysPaused: Bool {
+        get { hotkeys.isPaused }
+        set { hotkeys.isPaused = newValue }
     }
 
     // MARK: - Reconciliation
