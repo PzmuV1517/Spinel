@@ -36,6 +36,7 @@ final class WindowManager {
     private var draggedWindow: WindowID?
     private var movedDuringMouseDown = false
     private var refreshPending = false
+    private var settleRefresh: DispatchWorkItem?
     private let hotkeys = HotkeyCenter()
     private var tokens: [NSObjectProtocol] = []
     private var mouseMonitor: Any?
@@ -82,6 +83,7 @@ final class WindowManager {
             scheduleRefresh()
         case NSWorkspace.didActivateApplicationNotification:
             focusChanged()
+            scheduleRefresh()
         case NSWorkspace.didLaunchApplicationNotification:
             // Give the app a moment to create its first window and accept AX connections.
             scheduleRefresh(after: 0.5)
@@ -100,14 +102,24 @@ final class WindowManager {
                 return
             }
             scheduleRefresh()
-        case kAXFocusedWindowChangedNotification:
+        case kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification:
+            // Apps often don't send a destroyed notification for a window closed with ⌘W, but
+            // focus always moves when one closes, so treat focus changes as a reason to retile.
             focusChanged()
+            scheduleRefresh()
         default:
             scheduleRefresh()
         }
     }
 
+    /// Refreshes soon, plus once more after things settle: a closing or quitting app can still
+    /// list a window during its close animation, and may send nothing after it is gone.
     func scheduleRefresh(after delay: TimeInterval = 0.05) {
+        settleRefresh?.cancel()
+        let settle = DispatchWorkItem { [weak self] in MainActor.assumeIsolated { self?.refresh() } }
+        settleRefresh = settle
+        DispatchQueue.main.asyncAfter(deadline: .now() + max(delay, 0) + 0.4, execute: settle)
+
         guard !refreshPending else { return }
         refreshPending = true
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in

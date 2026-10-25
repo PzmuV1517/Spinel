@@ -15,6 +15,8 @@ final class AppObserver {
     private static let appNotifications = [
         kAXWindowCreatedNotification,
         kAXFocusedWindowChangedNotification,
+        kAXMainWindowChangedNotification,
+        kAXUIElementDestroyedNotification,
         kAXApplicationHiddenNotification,
         kAXApplicationShownNotification,
     ]
