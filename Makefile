@@ -1,5 +1,10 @@
 .PHONY: build test app run install release icon diagnose clean
 
+# Build against a local Quarry checkout when there is one (see Package.swift).
+ifneq ($(wildcard ../Quarry/Package.swift),)
+export QUARRY_PATH := $(abspath ../Quarry)
+endif
+
 build:
 	swift build
 

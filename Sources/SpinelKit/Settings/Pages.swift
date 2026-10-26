@@ -1,4 +1,5 @@
 import AppKit
+import QuarryKit
 import SwiftUI
 import SpinelCore
 
@@ -10,7 +11,7 @@ struct GeneralPage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             HStack(spacing: 16) {
-                AppIconView(size: 64)
+                AppIcon(bundle: SpinelApp.bundle, size: 64)
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Spinel").font(.system(size: 28, weight: .heavy))
                     Label(model.statusLine, systemImage: model.tilingEnabled ? "checkmark.circle.fill" : "pause.circle.fill")
@@ -40,9 +41,11 @@ struct GeneralPage: View {
                 }
             }
 
-            GlassSection(title: "System") {
-                Row(title: "Open at login", info: "Only works from the Applications folder.") {
-                    Toggle("", isOn: $model.launchAtLogin).toggleStyle(.switch).labelsHidden()
+            if !SpinelApp.isInQuarry {  // Quarry opens at login and brings Spinel with it
+                GlassSection(title: "System") {
+                    Row(title: "Open at login", info: "Only works from the Applications folder.") {
+                        Toggle("", isOn: $model.launchAtLogin).toggleStyle(.switch).labelsHidden()
+                    }
                 }
             }
 
@@ -382,16 +385,5 @@ struct AppBadge: View {
                 Text(bundleID).font(.caption).foregroundStyle(Brand.secondary)
             }
         }
-    }
-}
-
-struct AppIconView: View {
-    let size: CGFloat
-
-    var body: some View {
-        Image(nsImage: NSImage(named: "AppIcon") ?? NSApp.applicationIconImage)
-            .resizable()
-            .interpolation(.high)
-            .frame(width: size, height: size)
     }
 }

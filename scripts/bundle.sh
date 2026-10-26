@@ -7,12 +7,14 @@ cd "$(dirname "$0")/.."
 
 CONFIGURATION=${CONFIGURATION:-release}
 swift build -c "$CONFIGURATION"
-BIN="$(swift build -c "$CONFIGURATION" --show-bin-path)/Spinel"
+BIN_DIR="$(swift build -c "$CONFIGURATION" --show-bin-path)"
 
 APP=build/Spinel.app
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/Spinel"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Frameworks" "$APP/Contents/Resources"
+cp "$BIN_DIR/Spinel" "$APP/Contents/MacOS/Spinel"
+# The launcher loads this; Quarry loads it too (Info.plist: QuarryLibrary).
+cp "$BIN_DIR/libSpinelKit.dylib" "$APP/Contents/Frameworks/libSpinelKit.dylib"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 
@@ -21,5 +23,6 @@ if [ -z "$IDENTITY" ]; then
     echo "warning: no signing identity found, signing ad-hoc (Accessibility must be re-granted after each build)" >&2
     IDENTITY=-
 fi
+codesign --force --options runtime --sign "$IDENTITY" "$APP/Contents/Frameworks/libSpinelKit.dylib"
 codesign --force --options runtime --sign "$IDENTITY" "$APP"
 echo "Built $APP (signed with: $IDENTITY)"

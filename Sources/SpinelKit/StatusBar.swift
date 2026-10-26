@@ -1,4 +1,5 @@
 import AppKit
+import QuarryKit
 import ServiceManagement
 import SpinelCore
 
@@ -65,7 +66,31 @@ final class StatusBar: NSObject, NSMenuDelegate {
             return
         }
         guard let manager else { return }
+        SpinelMenu.addItems(to: menu, manager: manager, standalone: true) { [weak self] tab in self?.openSettings?(tab) }
+        let login = action("Open at Login") {
+            let service = SMAppService.mainApp
+            try? service.status == .enabled ? service.unregister() : service.register()
+        }
+        login.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        menu.addItem(login)
+        menu.addItem(.separator())
+        menu.addItem(action("About Spinel") { [weak self] in self?.openSettings?(.about) })
+        menu.addItem(action("Quit Spinel", key: "q") { NSApp.terminate(nil) })
+    }
 
+    private func disabled(_ title: String) -> NSMenuItem { SpinelMenu.disabled(title) }
+
+    private func action(_ title: String, key: String = "", _ handler: @escaping @MainActor () -> Void) -> NSMenuItem {
+        SpinelMenu.action(title, key: key, handler)
+    }
+}
+
+/// The window manager's menu items, shared by Spinel's own menu bar item and Quarry's menu.
+@MainActor
+enum SpinelMenu {
+    /// Inside Quarry (`standalone: false`) the items get no key equivalents, which would clash
+    /// with Quarry's own.
+    static func addItems(to menu: NSMenu, manager: WindowManager, standalone: Bool, openSettings: @escaping (SettingsTab) -> Void) {
         if manager.stageManagerActive {
             menu.addItem(disabled("Paused for Stage Manager"))
         } else if let status = manager.status() {
@@ -92,9 +117,11 @@ final class StatusBar: NSObject, NSMenuDelegate {
         menu.addItem(action("Retile") { manager.perform(.retile) })
         menu.addItem(.separator())
 
-        menu.addItem(action("Settings…", key: ",") { [weak self] in self?.openSettings?(.general) })
-        menu.addItem(action("Shortcuts…") { [weak self] in self?.openSettings?(.shortcuts) })
-        menu.addItem(action("Reload Config", key: "r") { manager.perform(.reloadConfig) })
+        if standalone {  // Quarry's menu has its own Settings… right below
+            menu.addItem(action("Settings…", key: ",") { openSettings(.general) })
+        }
+        menu.addItem(action("Shortcuts…") { openSettings(.shortcuts) })
+        menu.addItem(action("Reload Config", key: standalone ? "r" : "") { manager.perform(.reloadConfig) })
         if !manager.configErrors.isEmpty {
             let problems = NSMenuItem(title: "Config Errors (\(manager.configErrors.count))", action: nil, keyEquivalent: "")
             let list = NSMenu()
@@ -102,27 +129,16 @@ final class StatusBar: NSObject, NSMenuDelegate {
             problems.submenu = list
             menu.addItem(problems)
         }
-
-        let login = action("Open at Login") {
-            let service = SMAppService.mainApp
-            try? service.status == .enabled ? service.unregister() : service.register()
-        }
-        login.state = SMAppService.mainApp.status == .enabled ? .on : .off
-        menu.addItem(login)
-        menu.addItem(.separator())
-        menu.addItem(action("About Spinel") { [weak self] in self?.openSettings?(.about) })
-        menu.addItem(action("Quit Spinel", key: "q") { NSApp.terminate(nil) })
     }
 
-    private func disabled(_ title: String) -> NSMenuItem {
+    static func disabled(_ title: String) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         item.isEnabled = false
         return item
     }
 
-    private func action(_ title: String, key: String = "", _ handler: @escaping @MainActor () -> Void) -> NSMenuItem {
-        let item = ClosureMenuItem(title: title, keyEquivalent: key, handler: handler)
-        return item
+    static func action(_ title: String, key: String = "", _ handler: @escaping @MainActor () -> Void) -> NSMenuItem {
+        ClosureMenuItem(title: title, keyEquivalent: key, handler: handler)
     }
 }
 

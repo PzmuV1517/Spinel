@@ -179,15 +179,3 @@ final class SettingsSupportTests: XCTestCase {
         XCTAssertEqual(Set(Command.catalog.map(\.group)), Set(Command.catalogGroups))
     }
 }
-
-final class VersionTests: XCTestCase {
-    func testParsingAndOrdering() {
-        XCTAssertEqual(Version("v0.2.0")?.description, "0.2.0")
-        XCTAssertNil(Version("v0.2-beta"))
-        XCTAssertNil(Version(""))
-        XCTAssertLessThan(Version("0.1.1")!, Version("v0.2.0")!)
-        XCTAssertLessThan(Version("0.9")!, Version("0.10")!)
-        XCTAssertEqual(Version("1.0")!, Version("1.0.0")!)
-        XCTAssertFalse(Version("1.2.0")! < Version("1.1.9")!)
-    }
-}

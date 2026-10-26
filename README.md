@@ -22,11 +22,20 @@ own virtual workspaces (AeroSpace). Spinel does neither:
 `Spinel.app` to Applications. The app isn't notarized yet, so the first time, right-click it
 → **Open** (or System Settings → Privacy & Security → **Open Anyway**).
 
+**With [Quarry](https://github.com/PzmuV1517/Quarry):** Quarry → Library → Spinel →
+**Install** (or **Add**, if Spinel is already in Applications). Spinel then runs inside Quarry:
+its menu goes into Quarry's menu, its settings into Quarry's window, and Quarry updates it.
+**Run on Its Own** in Spinel's ⋯ menu in Quarry's Library turns it back into its own app.
+
 **From source:**
 
 ```sh
 make install     # builds, signs, copies to /Applications and launches
 ```
+
+The build needs [Quarry](https://github.com/PzmuV1517/Quarry)'s QuarryKit package. With a
+checkout at `../Quarry`, the Makefile builds against it (`QUARRY_PATH`); otherwise SwiftPM
+fetches it from GitHub.
 
 On first launch, grant Accessibility access when asked (System Settings → Privacy & Security →
 Accessibility). The menu bar icon shows the current Desktop number and layout.
