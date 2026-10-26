@@ -32,6 +32,11 @@ final class WindowManager {
     /// Moves we initiated that macOS may not have reflected in the window's Space yet.
     private var pendingMoves: [WindowID: (key: SpaceKey, until: Date)] = [:]
     private var lastFocused: WindowID?
+    /// Fullscreen windows being carried to another display; left alone until they land.
+    private var fullscreenMoves: Set<WindowID> = []
+    /// Where and when the last Desktop switch happened. Switching to an empty Desktop leaves
+    /// keyboard focus on another display, so quick repeat presses stay on this one.
+    private var lastDesktopSwitch: (display: String, at: Date)?
     private var observers: [pid_t: AppObserver] = [:]
     private var draggedWindow: WindowID?
     private var movedDuringMouseDown = false
@@ -288,7 +293,7 @@ final class WindowManager {
     }
 
     private func isTileable(_ window: Window) -> Bool {
-        guard window.isStandard, !userFloating.contains(window.id) else { return false }
+        guard window.isStandard, !userFloating.contains(window.id), !fullscreenMoves.contains(window.id) else { return false }
         if userTiled.contains(window.id) { return true }
         if let float = config.shouldFloat(bundleID: window.bundleID, appName: window.appName, title: window.title) {
             return !float
@@ -561,6 +566,7 @@ final class WindowManager {
             onChange?()
         case .focusDisplay(let target):
             if let current = activeDisplay(), let display = resolve(target, from: current) { focus(display: display) }
+        case .focusDesktop(let next): switchDesktop(next: next)
         case .moveToDisplay(let target): moveToDisplay(target)
         case .retile:
             trees.removeAll()
@@ -617,6 +623,12 @@ final class WindowManager {
     }
 
     private func move(_ direction: Direction) {
+        if let element = focusedWindowElement(), element.bool("AXFullScreen") == true {
+            if let current = activeDisplay(), let next = resolve(.direction(direction), from: current) {
+                moveFullscreen(element, to: next)
+            }
+            return
+        }
         guard let id = focusedWindowID(), let display = displayShowing(id), let tree = trees[display.key] else { return }
         // Use the BSP geometry even in monocle so moves stay predictable when switching back.
         let frames = tree.frames(in: display.visibleFrame, gaps: config.gaps)
@@ -635,6 +647,12 @@ final class WindowManager {
     }
 
     private func moveToDisplay(_ target: DisplayTarget) {
+        if let element = focusedWindowElement(), element.bool("AXFullScreen") == true {
+            if let current = activeDisplay(), let next = resolve(target, from: current) {
+                moveFullscreen(element, to: next)
+            }
+            return
+        }
         guard let current = activeDisplay(), let next = resolve(target, from: current), !next.isFullscreenSpace,
               let id = focusedWindowID() else { return }
         if displayShowing(id) != nil {
@@ -645,6 +663,66 @@ final class WindowManager {
             let size = CGSize(width: min(frame.width, area.width), height: min(frame.height, area.height))
             element.setPosition(CGPoint(x: (area.midX - size.width / 2).rounded(), y: (area.midY - size.height / 2).rounded()))
         }
+    }
+
+    /// Switches the Space on the display you're working on. macOS applies the Mission Control
+    /// shortcut to the display under the pointer, so bring the pointer there first.
+    private func switchDesktop(next: Bool) {
+        var display = activeDisplay()
+        if let last = lastDesktopSwitch, Date().timeIntervalSince(last.at) < 4,
+           let previous = displays.first(where: { $0.uuid == last.display }),
+           previous.frame.contains(Screen.mouseLocation) {
+            display = previous
+        }
+        guard let display else { return }
+        lastDesktopSwitch = (display.uuid, Date())
+        if !display.frame.contains(Screen.mouseLocation) {
+            CGWarpMouseCursorPosition(CGPoint(x: display.frame.midX, y: display.frame.midY))
+        }
+        if !(next ? SystemShortcut.nextSpace : SystemShortcut.previousSpace).post() {
+            configErrors.append("Turn on “Move left/right a space” in System Settings → Keyboard → Keyboard Shortcuts → Mission Control")
+            onChange?()
+            NSSound.beep()
+        }
+    }
+
+    /// Carries a native fullscreen window to another display and makes it fullscreen there.
+    /// macOS can't move a fullscreen Space between displays without SIP off, so this does
+    /// what a person would: leave fullscreen, move the window, enter fullscreen again.
+    private func moveFullscreen(_ element: AXUIElement, to target: Display) {
+        guard let id = element.windowID, !fullscreenMoves.contains(id) else { return }
+        var pid: pid_t = 0
+        AXUIElementGetPid(element, &pid)
+        fullscreenMoves.insert(id)
+        Task { @MainActor in
+            defer {
+                fullscreenMoves.remove(id)
+                scheduleRefresh()
+            }
+            element.set("AXFullScreen", kCFBooleanFalse)
+            guard await Self.wait(until: { element.bool("AXFullScreen") == false }) else { return }
+            try? await Task.sleep(for: .milliseconds(700))  // let the exit animation finish
+
+            let area = target.visibleFrame.insetBy(dx: config.gaps.outer, dy: config.gaps.outer)
+            element.setSize(area.size)
+            element.setPosition(area.origin)
+            element.setSize(area.size)
+            try? await Task.sleep(for: .milliseconds(300))
+
+            element.set("AXFullScreen", kCFBooleanTrue)
+            _ = await Self.wait(until: { element.bool("AXFullScreen") == true })
+            try? await Task.sleep(for: .milliseconds(700))
+            Window.focus(element, pid: pid)
+        }
+    }
+
+    /// Polls `condition` every 0.1 s for up to `timeout` seconds.
+    private static func wait(until condition: () -> Bool, timeout: Double = 3) async -> Bool {
+        for _ in 0..<Int(timeout * 10) {
+            if condition() { return true }
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+        return condition()
     }
 
     /// Moves a tiled window into another display's current Space.

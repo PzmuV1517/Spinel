@@ -104,6 +104,8 @@ public struct Config: Codable, Equatable, Sendable {
         "alt-m": "layout toggle",
         "alt-comma": "focus-display previous",
         "alt-period": "focus-display next",
+        "alt-leftbracket": "focus-desktop previous",
+        "alt-rightbracket": "focus-desktop next",
         "alt-shift-comma": "move-to-display previous",
         "alt-shift-period": "move-to-display next",
         "alt-shift-t": "toggle-tiling",

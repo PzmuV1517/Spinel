@@ -26,6 +26,8 @@ public enum Command: Equatable, Sendable {
     case nativeFullscreen
     case layout(LayoutChange)
     case focusDisplay(DisplayTarget)
+    /// Switch to the next / previous native Space (Desktop or fullscreen app) on this display.
+    case focusDesktop(next: Bool)
     case moveToDisplay(DisplayTarget)
     case toggleTiling
     case retile
@@ -55,6 +57,12 @@ public enum Command: Equatable, Sendable {
             if args[0] == "toggle" { return .layout(.toggle) }
             return LayoutMode(rawValue: args[0]).map { .layout(.set($0)) }
         case ("focus-display", 1): return displayTarget(args[0]).map(Command.focusDisplay)
+        case ("focus-desktop", 1):
+            switch args[0] {
+            case "next": return .focusDesktop(next: true)
+            case "prev", "previous": return .focusDesktop(next: false)
+            default: return nil
+            }
         case ("move-to-display", 1): return displayTarget(args[0]).map(Command.moveToDisplay)
         case ("toggle-tiling", 0): return .toggleTiling
         case ("retile", 0): return .retile

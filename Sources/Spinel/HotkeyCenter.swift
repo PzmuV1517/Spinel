@@ -82,6 +82,7 @@ final class HotkeyCenter: @unchecked Sendable {
             if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
             return false
         case .keyDown:
+            if event.getIntegerValueField(.eventSourceUserData) == SystemShortcut.marker { return false }
             let hotkey = Hotkey(modifiers: Self.modifiers(of: event.flags), keyCode: UInt32(event.getIntegerValueField(.keyboardEventKeycode)))
             guard let action = lock.withLock({ paused ? nil : actions[hotkey] }) else { return false }
             swallowed.insert(hotkey.keyCode)

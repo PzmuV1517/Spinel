@@ -154,6 +154,8 @@ final class ParsingTests: XCTestCase {
         XCTAssertEqual(Command.parse("layout monocle"), .layout(.set(.monocle)))
         XCTAssertEqual(Command.parse("move-to-display prev"), .moveToDisplay(.previous))
         XCTAssertEqual(Command.parse("focus-display up"), .focusDisplay(.direction(.up)))
+        XCTAssertEqual(Command.parse("focus-desktop next"), .focusDesktop(next: true))
+        XCTAssertEqual(Command.parse("focus-desktop prev"), .focusDesktop(next: false))
         XCTAssertNil(Command.parse("focus sideways"))
         XCTAssertNil(Command.parse(""))
     }

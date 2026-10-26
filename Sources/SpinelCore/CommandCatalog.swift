@@ -16,6 +16,7 @@ extension Command {
             ("focus left", "Focus Left"), ("focus down", "Focus Down"),
             ("focus up", "Focus Up"), ("focus right", "Focus Right"),
             ("focus-display previous", "Focus Previous Display"), ("focus-display next", "Focus Next Display"),
+            ("focus-desktop previous", "Previous Desktop"), ("focus-desktop next", "Next Desktop"),
         ])
         add("Move", [
             ("move left", "Move Left"), ("move down", "Move Down"),

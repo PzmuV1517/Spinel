@@ -49,6 +49,7 @@ Spinel sees of your displays and Spaces).
 | ⌥⇧ F | Native macOS fullscreen (toggle) |
 | ⌥⇧ Space | Float / tile the focused window |
 | ⌥ , / . | Focus previous / next display |
+| ⌥ [ / ] | Previous / next Desktop on the current display (includes fullscreen apps) |
 | ⌥⇧ , / . | Move window to previous / next display |
 | ⌥⇧ T | Pause / resume tiling |
 | ⌥⇧ R | Retile everything from scratch |

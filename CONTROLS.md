@@ -15,6 +15,7 @@ A cheat sheet for learning Spinel's keyboard and mouse controls.
 | **,** | Comma key | Right of M |
 | **.** | Period key | Right of the comma |
 | **Space** | Space bar | |
+| **[ ]** | Bracket keys | Right of P |
 
 **How to read a shortcut:** hold down every modifier key (⌥ ⇧ ⌃ ⌘) first, then tap the
 letter. For example, **⌥⇧L** means *hold Option and Shift, then press L*.
@@ -59,6 +60,8 @@ The modifier you hold chooses **what** happens. The letter chooses **which direc
 | **⌥L** | Focus the window to the **right** |
 | **⌥ ,** | Focus the **previous** display |
 | **⌥ .** | Focus the **next** display |
+| **⌥ [** | **Previous Desktop** on this display (fullscreen apps count too) |
+| **⌥ ]** | **Next Desktop** on this display |
 
 > At the edge of a screen, ⌥H/J/K/L continues onto the neighboring display.
 
@@ -89,7 +92,9 @@ The modifier you hold chooses **what** happens. The letter chooses **which direc
 "Next" and "previous" go through your displays **left to right**, as arranged in
 System Settings → Displays, and wrap around at the end.
 
-> A screen showing a **fullscreen app** can't receive windows. That Space belongs to macOS.
+> **Fullscreen windows move too.** Select a window in macOS fullscreen and use any of the keys
+> above: it leaves fullscreen, moves to the other screen and goes fullscreen again there
+> (takes about two seconds of macOS animation).
 
 ---
 
